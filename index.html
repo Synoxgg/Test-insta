@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FOSUBR - Social Media Services</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+        }
+        .app-container {
+            width: 100%;
+            max-width: 450px;
+            background-color: #ffffff;
+            min-height: 100vh;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        /* Header */
+        header {
+            background-color: #d13b9c;
+            color: white;
+            padding: 15px 20px;
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        .back-btn {
+            display: none;
+            color: white;
+            font-size: 20px;
+            margin-right: 15px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        /* Home View */
+        #view-home {
+            padding-bottom: 20px;
+        }
+        .banner {
+            width: 100%;
+            display: block;
+        }
+        .package-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .package-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .package-icon {
+            width: 35px;
+            height: 35px;
+            object-fit: contain;
+        }
+        .package-title {
+            font-size: 15px;
+            color: #555;
+        }
+        .buy-btn {
+            background: transparent;
+            border: 2px solid #333;
+            padding: 6px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+        }
+
+        /* Username View */
+        #view-username {
+            display: none;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .platform-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        #username-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0b021;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+        }
+        .verify-msg {
+            display: none;
+            background-color: #e6f8e6;
+            color: #2e7d32;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #c8e6c9;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .action-btn {
+            width: 100%;
+            background-color: #5bb4fa;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Payment View */
+        #view-payment {
+            display: none;
+            padding: 20px;
+            text-align: center;
+            background: linear-gradient(to bottom, #ffffff, #e0e0e0);
+            min-height: calc(100vh - 60px);
+        }
+        .timer {
+            font-size: 40px;
+            font-weight: bold;
+            color: #d32f2f;
+            margin: 20px 0;
+        }
+        .qr-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .qr-image {
+            width: 100%;
+            max-width: 250px;
+            margin: 0 auto;
+            display: block;
+        }
+        .amount-display {
+            font-size: 28px;
+            color: #555;
+            margin-bottom: 30px;
+        }
+        .complete-btn {
+            background-color: #66bb6a;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 18px;
+            width: 100%;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header>
+        <span class="back-btn" id="back-btn" onclick="goBack()">&#10094;</span>
+        FOSUBR
+    </header>
+
+    <div id="view-home">
+        <img src="banner.webp" alt="Best Sites to Buy" class="banner" onerror="this.style.display='none'">
+        
+        <div id="package-list">
+            </div>
+    </div>
+
+    <div id="view-username">
+        <h2 class="platform-title" id="display-platform">Instagram</h2>
+        
+        <div class="input-group">
+            <input type="text" id="username-input" placeholder="Enter Username">
+        </div>
+        
+        <div class="verify-msg" id="verify-msg">
+            ✅ Username Verified Successfully!
+        </div>
+
+        <button class="action-btn" id="verify-btn" onclick="verifyUsername()">Next</button>
+        <button class="action-btn" id="proceed-btn" style="display: none;" onclick="showPayment()">Next</button>
+    </div>
+
+    <div id="view-payment">
+        <div class="timer" id="timer-display">5:00</div>
+        
+        <div class="qr-card">
+            <img src="qr.webp" alt="QR Code" class="qr-image">
+        </div>
+        
+        <h2 class="amount-display" id="display-amount">Amount ₹26</h2>
+        
+        <button class="complete-btn" onclick="processPayment()">Payment Complete</button>
+    </div>
+
+</div>
+
+<script>
+    // Data based on your screenshots
+    const packages = [
+        { id: 1, platform: 'Instagram', title: '5,700 Followers', price: 26, icon: 'instagram.webp' },
+        { id: 2, platform: 'Instagram', title: '50,000 Post Reel Like\'s', price: 26, icon: 'instagram.webp' },
+        { id: 3, platform: 'Instagram', title: '50,000 Reels Views', price: 26, icon: 'instagram.webp' },
+        { id: 4, platform: 'Verified', title: 'Life Time Blue Tick', price: 39, icon: 'verified.webp' },
+        { id: 5, platform: 'YouTube', title: '4,000 Watch Time', price: 26, icon: 'youtube.webp' },
+        { id: 6, platform: 'YouTube', title: '6,700 Subscribers', price: 26, icon: 'youtube.webp' },
+        { id: 7, platform: 'YouTube', title: '50,000 Like\'s', price: 26, icon: 'youtube.webp' },
+        { id: 8, platform: 'YouTube', title: '100,000 Views', price: 26, icon: 'youtube.webp' },
+        { id: 9, platform: 'Facebook', title: '7,290 Followers', price: 26, icon: 'facebook.webp' },
+        { id: 10, platform: 'Facebook', title: '59,000 Post Reel Likes', price: 26, icon: 'facebook.webp' },
+        { id: 11, platform: 'Facebook', title: '54,000 Video Views', price: 26, icon: 'facebook.webp' },
+        { id: 12, platform: 'Twitter', title: '5,480 Followers', price: 26, icon: 'twitter.webp' }
+    ];
+
+    let currentPackage = null;
+    let timerInterval = null;
+
+    // Render Home List
+    function init() {
+        const listContainer = document.getElementById('package-list');
+        packages.forEach(pkg => {
+            listContainer.innerHTML += `
+                <div class="package-item">
+                    <div class="package-info">
+                        <img src="${pkg.icon}" alt="${pkg.platform}" class="package-icon" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCI+PHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjY2NjIi8+PC9zdmc+'">
+                        <span class="package-title">${pkg.title}</span>
+                    </div>
+                    <button class="buy-btn" onclick="selectPackage(${pkg.id})">₹${pkg.price} Buy</button>
+                </div>
+            `;
+        });
+    }
+
+    // Handle Selection
+    function selectPackage(id) {
+        currentPackage = packages.find(p => p.id === id);
+        
+        // Reset Username fields
+        document.getElementById('username-input').value = '';
+        document.getElementById('verify-msg').style.display = 'none';
+        document.getElementById('username-input').style.display = 'block';
+        document.getElementById('verify-btn').style.display = 'block';
+        document.getElementById('proceed-btn').style.display = 'none';
+
+        // Update UI
+        document.getElementById('display-platform').innerText = currentPackage.platform;
+        document.getElementById('username-input').placeholder = `Enter ${currentPackage.platform} Username`;
+        
+        switchView('view-username');
+    }
+
+    // Verify Username
+    function verifyUsername() {
+        const input = document.getElementById('username-input').value.trim();
+        if(input === "") {
+            alert("Please enter a username first!");
+            return;
+        }
+        
+        // Hide input and show success message
+        document.getElementById('username-input').style.display = 'none';
+        document.getElementById('verify-msg').style.display = 'block';
+        
+        // Swap buttons
+        document.getElementById('verify-btn').style.display = 'none';
+        document.getElementById('proceed-btn').style.display = 'block';
+    }
+
+    // Go to Payment
+    function showPayment() {
+        document.getElementById('display-amount').innerText = `Amount ₹${currentPackage.price}`;
+        switchView('view-payment');
+        startTimer(5 * 60); // 5 minutes
+    }
+
+    // Timer Logic
+    function startTimer(durationInSeconds) {
+        clearInterval(timerInterval);
+        let timer = durationInSeconds;
+        const display = document.getElementById('timer-display');
+        
+        timerInterval = setInterval(function () {
+            let minutes = parseInt(timer / 60, 10);
+            let seconds = parseInt(timer % 60, 10);
+
+            minutes = minutes < 10 ? minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            display.textContent = minutes + ":" + seconds;
+
+            if (--timer < 0) {
+                timer = 0;
+                clearInterval(timerInterval);
+            }
+        }, 1000);
+    }
+
+    // The core requirement: Payment Completion button logic
+    function processPayment() {
+        alert("Payment is not completed");
+    }
+
+    // Navigation Helper
+    function switchView(viewId) {
+        document.getElementById('view-home').style.display = 'none';
+        document.getElementById('view-username').style.display = 'none';
+        document.getElementById('view-payment').style.display = 'none';
+        
+        document.getElementById(viewId).style.display = 'block';
+        
+        // Show/Hide back button
+        document.getElementById('back-btn').style.display = (viewId === 'view-home') ? 'none' : 'block';
+        
+        if(viewId !== 'view-payment') {
+            clearInterval(timerInterval);
+        }
+    }
+
+    function goBack() {
+        switchView('view-home');
+    }
+
+    // Run on load
+    window.onload = init;
+</script>
+
+</body>
+</html>
